@@ -1,0 +1,6 @@
+server:
+  port: 8080
+
+axon:
+  axonserver:
+    component-name: "bff"

@@ -1,0 +1,116 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    },
+    "import/resolver": {
+      "node": {
+        "moduleDirectory": ["node_modules", "src"],
+        "paths": ["."],
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended", // Uses the recommended rules from @eslint-plugin-react
+    "plugin:@typescript-eslint/recommended", // Uses the recommended rules from the @typescript-eslint/eslint-plugin
+    "plugin:prettier/recommended", // Enables eslint-plugin-prettier and eslint-config-prettier. This will display prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
+    "prettier/react",
+    "prettier/@typescript-eslint", // Uses eslint-config-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript"
+  ],
+  "plugins": [
+    "prettier",
+    "redux-saga",
+    "react",
+    "react-hooks",
+    "jsx-a11y",
+    "@typescript-eslint"
+  ],
+  "env": {
+    "jest": true,
+    "browser": true,
+    "node": true,
+    "es6": true
+  },
+  "globals": {
+    "document": "readonly",
+    "describe": "readonly",
+    "expect": "readonly",
+    "it": "readonly",
+    "xit": "readonly",
+    "beforeEach": "readonly",
+    "afterEach": "readonly",
+    "beforeAll": "readonly",
+    "jest": "readonly",
+    "ENV_CONFIG": "readonly",
+    "cy": "readonly",
+    "Cypress": "readonly"
+  },
+  "rules": {
+    "max-len": [2, 140, 2],
+    "react/jsx-filename-extension": 0,
+    "import/prefer-default-export": 0,
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": ["**/__tests__/**", "**/*.steps.ts", "**/*.stories.*", "**/__mocks__/**"],
+        "optionalDependencies": false,
+        "peerDependencies": false
+      }
+    ],
+    "import/order": [
+      "warn",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          ["sibling", "parent"],
+          "object",
+          "index"
+        ],
+        "alphabetize": {"order": "asc", "caseInsensitive": true},
+        "pathGroups": [
+          {
+            "pattern": "react**",
+            "group": "external",
+            "position": "before"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": ["builtin"]
+      }
+    ],
+    "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/no-unused-vars": ["warn", {"argsIgnorePattern": "^_"}],
+    "@typescript-eslint/explicit-function-return-type": 0,
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "react-hooks/rules-of-hooks": "error", // Checks rules of Hooks
+    "react-hooks/exhaustive-deps": "warn", // Checks effect dependencies
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "rules": {
+        "@typescript-eslint/explicit-module-boundary-types": ["error"]
+      }
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+/bin/
+out
+/data
+.DS_Store
+
+### Web ###
+# dependencies
+**/node_modules
+
+# testing
+web/coverage
+web/report.json
+web/test-report.xml
+web/storybook
+web/data
+web/reports
+
+# reports
+web/.scannerwork
+
+# production
+web/build*
+
+# misc
+web/.DS_Store
+web/.env.development.local
+web/.env.test.local
+web/.env.production.local
+
+web/npm-debug.log*
+
+### Maven ###
+**/target
+**/src/main/**/target/
+**/src/test/**/target/
+
+### Local environment ###
+local-environment/volumes/axonserver/data
+local-environment/volumes/axonserver/events

@@ -1,0 +1,10 @@
+mongodb:
+  uri: mongodb://user:password@localhost:27017/user?authSource=admin
+  database: calculator
+
+server:
+  port: 8091
+
+axon:
+  axonserver:
+    component-name: "calculator-projection-service"
