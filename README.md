@@ -2,7 +2,7 @@
 Simple example of calculator that is implemented on the spring boot backend using Axon Framework + websocket communication with FE.
 
 ## How to start project
-- Run docker environment in using [docker-compose.yaml](local-environment/docker-compose.yaml)
+- Run docker environment using [docker-compose.yaml](local-environment/docker-compose.yaml)
 - FE
   - install and run it in folder [web](web) using commands `npm install` and `npm start`
 - BE 
@@ -19,3 +19,6 @@ Simple example of calculator that is implemented on the spring boot backend usin
 - Websocket
 - Typescript 4.9
 - React 18
+
+## Application schema
+![app schema](app_schema.jpg)
