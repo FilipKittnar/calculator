@@ -1,0 +1,35 @@
+{
+  "name": "calculator",
+  "sources": [
+    {
+      "dir": "src",
+      "subdirs": true
+    },
+    {
+      "dir": "tests",
+      "type": "dev",
+      "subdirs": true
+    }
+  ],
+  "package-specs": [
+    {
+      "module": "es6",
+      "in-source": true
+    }
+  ],
+  "suffix": ".bs.js",
+  "bs-dependencies": [
+    "@rescript/react",
+    "rescript-material-ui",
+    "@ryyppy/rescript-promise",
+    "@mobily/rescript-date",
+    "rescript-material-ui-lab",
+    "rescript-webapi"
+  ],
+  "bs-dev-dependencies": ["rescript-vitest"],
+  "jsx": { "version": 4, "mode": "automatic" },
+  "warnings": {
+    "number": "+A-42-48",
+    "error": "+A-3-44-102-103"
+  }
+}
