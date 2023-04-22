@@ -1,6 +1,6 @@
 {
   "name": "calculator-web",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@emotion/css": "^11.10.6",
@@ -91,5 +91,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "packageManager": "yarn@3.5.0"
 }
