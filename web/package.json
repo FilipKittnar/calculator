@@ -41,6 +41,8 @@
     "rescript": "^10.1.4",
     "rescript-material-ui": "^3.0.2",
     "rescript-material-ui-lab": "^3.0.2",
+    "rescript-struct": "^4.0.0",
+    "rescript-uuid": "^9.0.0-rc",
     "rescript-vitest": "^1.1.0",
     "rescript-webapi": "^0.8.0",
     "reselect": "^4.1.5",

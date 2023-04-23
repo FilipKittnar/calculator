@@ -2197,6 +2197,8 @@ __metadata:
     rescript: ^10.1.4
     rescript-material-ui: ^3.0.2
     rescript-material-ui-lab: ^3.0.2
+    rescript-struct: ^4.0.0
+    rescript-uuid: ^9.0.0-rc
     rescript-vitest: ^1.1.0
     rescript-webapi: ^0.8.0
     reselect: ^4.1.5
@@ -5099,6 +5101,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rescript-struct@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "rescript-struct@npm:4.0.0"
+  peerDependencies:
+    rescript: 10.1.x
+  checksum: a487fb6bd39f9b38e7271ad2874a75a598f4b453894c924b72e1a65af6dcc8199c8e3a6ffdc8207480f5d5cd0fbe6b1f62cb632141fe0025eba49245e3063467
+  languageName: node
+  linkType: hard
+
+"rescript-uuid@npm:^9.0.0-rc":
+  version: 9.0.0-rc
+  resolution: "rescript-uuid@npm:9.0.0-rc"
+  dependencies:
+    uuid: ^9.0.0
+  checksum: c68fd2cc5adf9ce9e4f16c7d95beb879f8384e001d27f0258a7f9a1b79a48ab1db844b649bf99b8d69054094e2d0af1d308006f6de0c6ab98c7f46760921ff46
+  languageName: node
+  linkType: hard
+
 "rescript-vitest@npm:^1.1.0":
   version: 1.1.0
   resolution: "rescript-vitest@npm:1.1.0"
@@ -5949,6 +5969,15 @@ __metadata:
   bin:
     uuid: dist/bin/uuid
   checksum: 5575a8a75c13120e2f10e6ddc801b2c7ed7d8f3c8ac22c7ed0c7b2ba6383ec0abda88c905085d630e251719e0777045ae3236f04c812184b7c765f63a70e58df
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "uuid@npm:9.0.0"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 8dd2c83c43ddc7e1c71e36b60aea40030a6505139af6bee0f382ebcd1a56f6cd3028f7f06ffb07f8cf6ced320b76aea275284b224b002b289f89fe89c389b028
   languageName: node
   linkType: hard
 

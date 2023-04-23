@@ -24,8 +24,11 @@
     "@ryyppy/rescript-promise",
     "@mobily/rescript-date",
     "rescript-material-ui-lab",
-    "rescript-webapi"
+    "rescript-webapi",
+    "rescript-struct",
+    "rescript-uuid"
   ],
+  "bsc-flags": ["-open RescriptStruct"],
   "bs-dev-dependencies": ["rescript-vitest"],
   "jsx": { "version": 4, "mode": "automatic" },
   "warnings": {

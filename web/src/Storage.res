@@ -1,3 +1,5 @@
+open WebSocket_Types
+
 module type Config = {
   type context
   let defaultValue: context
@@ -15,12 +17,18 @@ type state = {
   snackbarOpen: bool,
   snackbarMessage: option<string>,
   calculator: Result.t<Calculator_Types.t, Calculator_Types.calculationErrorResponse>,
+  wsClient: option<Stomp.client>,
+  wsConnected: bool,
+  wsRequests: Belt.Map.String.t<action>,
 }
 
 let initialState = {
   snackbarOpen: false,
   snackbarMessage: None,
   calculator: NotStarted,
+  wsClient: None,
+  wsConnected: false,
+  wsRequests: Belt.Map.String.empty,
 }
 
 type action =
@@ -29,6 +37,10 @@ type action =
   | StartLoadingCalculator
   | SetCalculator(Calculator_Types.t)
   | SetCalculatorError(Calculator_Types.calculationErrorResponse)
+  | SetWsClient(Stomp.client)
+  | SetWsConnected(bool)
+  | AddWsRequest(action)
+  | RemoveWsRequest(string)
 
 let reducer = (state, action) =>
   switch action {
@@ -52,6 +64,25 @@ let reducer = (state, action) =>
   | SetCalculatorError(calculationErrorResponse) => {
       ...state,
       calculator: Error(calculationErrorResponse),
+    }
+  | SetWsClient(wsClient) => {
+      ...state,
+      wsClient: Some(wsClient),
+    }
+  | SetWsConnected(wsConnected) => {
+      ...state,
+      wsConnected,
+    }
+  | AddWsRequest(webSocketAction) => {
+      ...state,
+      wsRequests: state.wsRequests->Belt.Map.String.set(
+        webSocketAction.trackingId,
+        webSocketAction,
+      ),
+    }
+  | RemoveWsRequest(trackingId) => {
+      ...state,
+      wsRequests: state.wsRequests->Belt.Map.String.remove(trackingId),
     }
   }
 

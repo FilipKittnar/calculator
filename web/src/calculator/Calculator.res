@@ -58,7 +58,15 @@ module Classes = {
 
 @react.component
 let make = () => {
-  let (state, _dispatch) = React.useContext(Storage.Context.t)
+  let (state, dispatch) = React.useContext(Storage.Context.t)
+
+  React.useEffect0(() => {
+    dispatch(StartLoadingCalculator)
+
+    Js.Json.null->WebSocket.send(~url=Constants.Calculator.fetchCalculatorUrl, ~state, ~dispatch)
+
+    None
+  })
 
   <div className=Classes.container>
     <Grid container=true direction=#row>

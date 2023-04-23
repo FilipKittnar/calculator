@@ -110,7 +110,7 @@ module ResultFieldTopPartValue = {
       <Grid container=true justify=#"flex-end">
         {calculator
         ->Belt.Option.flatMap(({?value, _}) => value)
-        ->Belt.Option.map(Belt.Int.toString)
+        ->Belt.Option.map(Belt.Float.toString)
         ->Belt.Option.getWithDefault("")
         ->Jsx.string}
         {calculator
@@ -137,7 +137,7 @@ module ResultFieldBottomPartValue = {
         onlyResultPresent()
           ? calculator
             ->Belt.Option.flatMap(({?latestResult, _}) => latestResult)
-            ->Belt.Option.map(Belt.Int.toString)
+            ->Belt.Option.map(Belt.Float.toString)
           : calculator->Belt.Option.flatMap(({?entry, _}) => entry)
       )->Belt.Option.getWithDefault("")
 
