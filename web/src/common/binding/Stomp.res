@@ -1,4 +1,4 @@
-type frame = {body?: string}
+type frame
 type versions
 type clientConfig = {
   brokerURL?: string,
@@ -15,6 +15,9 @@ type publishParams = {
 }
 
 @module("@stomp/stompjs") @val external frame: Js.nullable<frame> = "Frame"
+
+@get external body: frame => option<string> = "body"
+@get external headers: frame => option<{..}> = "headers"
 
 @module("@stomp/stompjs") @new external createClient: clientConfig => client = "Client"
 

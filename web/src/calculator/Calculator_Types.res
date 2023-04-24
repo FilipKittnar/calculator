@@ -24,11 +24,11 @@ type historyRow = {
   result?: float,
 }
 let historyRowStruct = S.object(o => {
-  rowId: ?o->S.field("rowId", S.option(S.string())),
-  value: ?o->S.field("value", S.option(S.float())),
-  operation: ?o->S.field("operation", S.option(Operator.tStruct)),
-  incomingValue: ?o->S.field("incomingValue", S.option(S.float())),
-  result: ?o->S.field("result", S.option(S.float())),
+  rowId: ?o->S.field("rowId", S.null(S.string())),
+  value: ?o->S.field("value", S.null(S.float())),
+  operation: ?o->S.field("operation", S.null(Operator.tStruct)),
+  incomingValue: ?o->S.field("incomingValue", S.null(S.float())),
+  result: ?o->S.field("result", S.null(S.float())),
 })
 
 type calculationErrorType = ZeroDivisionAttempted | MissingOperation | MissingEntry
@@ -40,7 +40,7 @@ let calculationErrorTypeStruct = S.union([
 
 type calculationErrorResponse = {errorType?: calculationErrorType}
 let calculationErrorResponseStruct = S.object(o => {
-  errorType: ?o->S.field("errorType", S.option(calculationErrorTypeStruct)),
+  errorType: ?o->S.field("errorType", S.null(calculationErrorTypeStruct)),
 })
 
 type t = {
@@ -48,14 +48,15 @@ type t = {
   entry?: string,
   latestResult?: float,
   currentOperation?: Operator.t,
-  results: array<historyRow>,
+  results: list<historyRow>,
 }
 let tStruct = S.object(o => {
-  value: ?o->S.field("value", S.option(S.float())),
-  entry: ?o->S.field("entry", S.option(S.string())),
-  latestResult: ?o->S.field("latestResult", S.option(S.float())),
-  currentOperation: ?o->S.field("currentOperation", S.option(Operator.tStruct)),
+  value: ?o->S.field("value", S.null(S.float())),
+  entry: ?o->S.field("entry", S.null(S.string())),
+  latestResult: ?o->S.field("latestResult", S.null(S.float())),
+  currentOperation: ?o->S.field("currentOperation", S.null(Operator.tStruct)),
   results: o
-  ->S.field("results", S.option(S.array(historyRowStruct)))
-  ->Belt.Option.getWithDefault([]),
+  ->S.field("results", S.null(S.array(historyRowStruct)))
+  ->Belt.Option.map(Belt.List.fromArray)
+  ->Belt.Option.getWithDefault(list{}),
 })

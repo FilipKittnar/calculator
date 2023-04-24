@@ -61,17 +61,38 @@ let make = () => {
   let (state, dispatch) = React.useContext(Storage.Context.t)
 
   React.useEffect0(() => {
-    dispatch(StartLoadingCalculator)
-
-    Js.Json.null->WebSocket.send(~url=Constants.Calculator.fetchCalculatorUrl, ~state, ~dispatch)
+    Constants.Calculator.fetchCalculatorUrl->WebSocket.send(~state, ~dispatch)
 
     None
   })
 
+  React.useEffect1(() => {
+    state.calculator->Belt.Option.forEach(calculator =>
+      switch calculator {
+      | Error({?errorType}) =>
+        dispatch(
+          SetSnackbarOpen(
+            switch errorType {
+            | Some(ZeroDivisionAttempted) => "Cannot divide with zero"
+            | Some(MissingOperation) => "Operation not selected"
+            | Some(MissingEntry) => "Please fill in value"
+            | None => "Unexpected error"
+            },
+          ),
+        )
+      | Ok(_) => ()
+      }
+    )
+
+    None
+  }, [state.calculator])
+
   <div className=Classes.container>
     <Grid container=true direction=#row>
       <Standard
-        calculator=?{state.calculator->Result.mapWithDefault(None, calculator => Some(calculator))}
+        calculator={state.calculator
+        ->Belt.Option.map(calculator => calculator->Belt.Result.getWithDefault({results: list{}}))
+        ->Belt.Option.getWithDefault({results: list{}})}
       />
     </Grid>
   </div>

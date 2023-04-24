@@ -16,7 +16,7 @@ module Make = (Config: Config) => {
 type state = {
   snackbarOpen: bool,
   snackbarMessage: option<string>,
-  calculator: Result.t<Calculator_Types.t, Calculator_Types.calculationErrorResponse>,
+  calculator: option<Belt.Result.t<Calculator_Types.t, Calculator_Types.calculationErrorResponse>>,
   wsClient: option<Stomp.client>,
   wsConnected: bool,
   wsRequests: Belt.Map.String.t<action>,
@@ -25,7 +25,7 @@ type state = {
 let initialState = {
   snackbarOpen: false,
   snackbarMessage: None,
-  calculator: NotStarted,
+  calculator: None,
   wsClient: None,
   wsConnected: false,
   wsRequests: Belt.Map.String.empty,
@@ -34,7 +34,6 @@ let initialState = {
 type action =
   | SetSnackbarOpen(string)
   | SetSnackbarClosed
-  | StartLoadingCalculator
   | SetCalculator(Calculator_Types.t)
   | SetCalculatorError(Calculator_Types.calculationErrorResponse)
   | SetWsClient(Stomp.client)
@@ -53,17 +52,13 @@ let reducer = (state, action) =>
       ...state,
       snackbarOpen: false,
     }
-  | StartLoadingCalculator => {
-      ...state,
-      calculator: Pending,
-    }
   | SetCalculator(calculator) => {
       ...state,
-      calculator: Ok(calculator),
+      calculator: Some(Ok(calculator)),
     }
   | SetCalculatorError(calculationErrorResponse) => {
       ...state,
-      calculator: Error(calculationErrorResponse),
+      calculator: Some(Error(calculationErrorResponse)),
     }
   | SetWsClient(wsClient) => {
       ...state,

@@ -1,60 +1,21 @@
 module Types = WebSocket_Types
-
-let validateMessage = (message: option<Stomp.frame>) => {
-  if message->Belt.Option.isNone {
-    Js.Exn.raiseError("no message in response")
-  }
-  if message->Belt.Option.flatMap(({?body}) => body)->Belt.Option.isNone {
-    Js.Exn.raiseError("no body in message")
-  }
-
-  message->Belt.Option.getUnsafe
-}
-
-let validatePayload = ({?\"type", ?payload, _}: Types.response) => {
-  if \"type"->Belt.Option.isNone {
-    Js.Exn.raiseError("no type in response")
-  }
-  if payload->Belt.Option.isNone {
-    Js.Exn.raiseError("no payload in response")
-  }
-}
-
-let basicValidation = (message: option<Stomp.frame>): Types.response => {
-  let message = message->validateMessage
-
-  // This should be Types.response
-  let response = message.body->Belt.Option.map(S.parseJsonWith(_, Calculator_Types.tStruct))
-
-  // TODO: log
-  Js.Console.log2("FKR: Got WS response: response=", response)
-
-  {
-    \"type": #basic,
-    trackingId: "blabla",
-    payload: response,
-  }
-}
+module Parser = WebSocket_Parser
 
 let sendMessage = (stompClient, action: Types.action) => {
-  let {trackingId, payload, url, _} = action
-  let request: Types.request = {trackingId, payload}
+  let {trackingId, ?payload, url, _} = action
+  let request: Types.request = {trackingId, ?payload}
 
-  try {
-    stompClient->Stomp.publish({
-      destination: `${Constants.WebSocket.destinationPrefix}${url}`,
-      body: ?request->Js.Json.stringifyAny,
-    })
-  } catch {
-  | Js.Exn.Error(e) => Js.Console.error2("Error observed during stomp client publish.", e)
-  }
+  stompClient->Stomp.publish({
+    destination: `${Constants.WebSocket.destinationPrefix}${url}`,
+    body: ?request->Js.Json.stringifyAny,
+  })
 }
 
-let send = (~url, ~state: Storage.state, ~dispatch, payload) => {
+let send = (~payload=?, ~state: Storage.state, ~dispatch, url) => {
   let action: Types.action = {
     \"type": Constants.WebSocket.sendRequest,
     url,
-    payload,
+    ?payload,
     trackingId: Uuid.V4.make(),
     state: Types.Sent,
     created: Js.Date.make(),
@@ -78,14 +39,24 @@ let resendAllPendingRequests = (~state: Storage.state, ~dispatch) => {
   ->Belt.List.forEach(request => {
     dispatch(Storage.RemoveWsRequest(request.trackingId))
 
-    let {payload, url, _} = request
+    let {?payload, url, _} = request
 
-    payload->send(~url, ~state, ~dispatch)
+    url->send(~payload?, ~state, ~dispatch)
   })
 }
 
-let onMessageReceived = message => {
-  let _ = message->basicValidation
+let onMessageReceived = (~dispatch, message) => {
+  let reponse = message->Parser.parse(~dispatch)
+
+  reponse.trackingId->Belt.Option.forEach(trackingId =>
+    dispatch(Storage.RemoveWsRequest(trackingId))
+  )
+
+  switch reponse.payload {
+  | Some(Ok(calculator)) => dispatch(Storage.SetCalculator(calculator))
+  | Some(Error(error)) => dispatch(Storage.SetCalculatorError(error))
+  | None => dispatch(Storage.SetSnackbarOpen("No payload in WS response body"))
+  }
 }
 
 let onConnect = (~onClientConnected, ~dispatch, frame, stompClient) => {
@@ -96,7 +67,7 @@ let onConnect = (~onClientConnected, ~dispatch, frame, stompClient) => {
 
   stompClient->Stomp.subscribe(
     ~destination=`/user/${Constants.WebSocket.destinationQueueMain}`,
-    ~callback=onMessageReceived,
+    ~callback=onMessageReceived(~dispatch),
   )
 
   onClientConnected()
