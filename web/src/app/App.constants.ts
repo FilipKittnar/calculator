@@ -1,1 +1,0 @@
-export const APP_NAMESPACE = 'AXON_TRAINING_APP';

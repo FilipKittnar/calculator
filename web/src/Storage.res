@@ -1,4 +1,5 @@
 open WebSocket_Types
+open Calculator_Types
 
 module type Config = {
   type context
@@ -16,7 +17,7 @@ module Make = (Config: Config) => {
 type state = {
   snackbarOpen: bool,
   snackbarMessage: option<string>,
-  calculator: option<Belt.Result.t<Calculator_Types.t, Calculator_Types.calculationErrorResponse>>,
+  calculator: option<Belt.Result.t<calculator, calculationErrorResponse>>,
   wsClient: option<Stomp.client>,
   wsConnected: bool,
   wsRequests: Belt.Map.String.t<action>,
@@ -34,8 +35,8 @@ let initialState = {
 type action =
   | SetSnackbarOpen(string)
   | SetSnackbarClosed
-  | SetCalculator(Calculator_Types.t)
-  | SetCalculatorError(Calculator_Types.calculationErrorResponse)
+  | SetCalculator(calculator)
+  | SetCalculatorError(calculationErrorResponse)
   | SetWsClient(Stomp.client)
   | SetWsConnected(bool)
   | AddWsRequest(action)

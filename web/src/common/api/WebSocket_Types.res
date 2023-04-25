@@ -1,3 +1,5 @@
+open Calculator_Types
+
 type state = Sent | Pending
 
 type action = {
@@ -28,13 +30,13 @@ let responseOnlyTypeStruct = S.object(o => {
 type response = {
   \"type": responseType,
   trackingId?: string,
-  payload?: Belt.Result.t<Calculator_Types.t, Calculator_Types.calculationErrorResponse>,
+  payload?: Belt.Result.t<calculator, calculationErrorResponse>,
 }
 let responseOkStruct = S.object((o): response => {
   \"type": o->S.field("type", responseTypeStruct),
   trackingId: ?o->S.field("trackingId", S.null(S.string())),
   payload: ?(
-    o->S.field("payload", S.null(Calculator_Types.tStruct))->Belt.Option.map(payload => Ok(payload))
+    o->S.field("payload", S.null(calculatorStruct))->Belt.Option.map(payload => Ok(payload))
   ),
 })
 let responseErrorStruct = S.object((o): response => {

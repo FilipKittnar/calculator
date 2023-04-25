@@ -16,6 +16,21 @@ module Operator = {
     }
 }
 
+type addNumberToEntryRequest = {number?: float}
+let addNumberToEntryRequestStruct = S.object(o => {
+  number: ?o->S.field("number", S.null(S.float())),
+})
+
+type selectOperationTypeRequest = {operationType?: Operator.t}
+let selectOperationTypeRequestStruct = S.object(o => {
+  operationType: ?o->S.field("operationType", S.null(Operator.tStruct)),
+})
+
+type removeHistoryRowRequest = {rowId?: string}
+let removeHistoryRowRequestStruct = S.object(o => {
+  rowId: ?o->S.field("rowId", S.null(S.string())),
+})
+
 type historyRow = {
   rowId?: string,
   value?: float,
@@ -43,20 +58,17 @@ let calculationErrorResponseStruct = S.object(o => {
   errorType: ?o->S.field("errorType", S.null(calculationErrorTypeStruct)),
 })
 
-type t = {
+type calculator = {
   value?: float,
   entry?: string,
   latestResult?: float,
   currentOperation?: Operator.t,
-  results: list<historyRow>,
+  results: array<historyRow>,
 }
-let tStruct = S.object(o => {
+let calculatorStruct = S.object(o => {
   value: ?o->S.field("value", S.null(S.float())),
   entry: ?o->S.field("entry", S.null(S.string())),
   latestResult: ?o->S.field("latestResult", S.null(S.float())),
   currentOperation: ?o->S.field("currentOperation", S.null(Operator.tStruct)),
-  results: o
-  ->S.field("results", S.null(S.array(historyRowStruct)))
-  ->Belt.Option.map(Belt.List.fromArray)
-  ->Belt.Option.getWithDefault(list{}),
+  results: o->S.field("results", S.array(historyRowStruct)),
 })
