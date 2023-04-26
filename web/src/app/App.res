@@ -2,7 +2,7 @@ open ReactDOM
 open Emotion
 
 module Classes = {
-  let container = Style.make(~height="100%", ~width="100%", ())->styleToClass
+  let container = Style.make(~paddingTop="24px", ())->styleToClass
 }
 
 @react.component
@@ -37,11 +37,9 @@ let make = () => {
   })
 
   <Notistack.SnackbarProvider>
-    <Mui.Grid container=true className=Classes.container>
-      <Snackbar />
-      <Mui.Grid>
-        <Calculator />
-      </Mui.Grid>
-    </Mui.Grid>
+    <Mui.Container fixed=true maxWidth=Mui.Container.MaxWidth.xs className=Classes.container>
+      <Alert />
+      <Calculator />
+    </Mui.Container>
   </Notistack.SnackbarProvider>
 }

@@ -1,35 +1,12 @@
-open ReactDOM
-open Emotion
 open Calculator_Types
-
-module Classes = {
-  let container =
-    Style.make(
-      ~padding="20px",
-      ~width="300px",
-      ~background="#3a4655",
-      ~border="solid 1px #4a5562",
-      (),
-    )->styleToClass
-  let historyHeader = Style.make(~fontSize="20px", ())->styleToClass
-  let rowsContainer =
-    Style.make(
-      ~width="300px",
-      ~height="200px",
-      ~overflowY="auto",
-      ~border="solid 1px #4a5562",
-      (),
-    )->styleToClass
-  let iconButton = Style.make(~color="white", ())->styleToClass
-}
+open Calculator_Styles
+open Icon
+open Mui
 
 @react.component
 let make = () => {
   let (rows, setRows) = React.useState(() => [])
   let (state, dispatch) = React.useContext(Storage.Context.t)
-
-  // TODO: log
-  Js.Console.log2("FKR: Calculator history render: rows=", rows)
 
   React.useEffect1(() => {
     setRows(_ =>
@@ -71,42 +48,52 @@ let make = () => {
     ]->Jsx.array
   }
 
-  <div className=Classes.container>
-    <div className=Classes.historyHeader> {"Calculator history"->React.string} </div>
-    <Mui.Grid container=true alignItems=#center>
-      <Mui.IconButton
-        onClick={_ => Constants.Calculator.clearHistoryUrl->WebSocket.send(~state, ~dispatch)}
-        disabled={rows->Belt.Array.length == 0}
-        className=Classes.iconButton>
-        <Icon.Delete />
-      </Mui.IconButton>
-      {"Clear history"->React.string}
-    </Mui.Grid>
-    <div className=Classes.rowsContainer>
+  <Grid container=true direction=#column alignItems=#stretch className=section>
+    <Grid item=true className=subSection>
+      <Grid container=true justify=#center>
+        <Grid item=true>
+          <Typography variant=#h4> {"Calculator history"->React.string} </Typography>
+        </Grid>
+      </Grid>
+    </Grid>
+    <Grid item=true className=subSection>
+      <Grid container=true alignItems=#center>
+        <Grid item=true>
+          <IconButton
+            onClick={_ => Constants.Calculator.clearHistoryUrl->WebSocket.send(~state, ~dispatch)}
+            disabled={rows->Belt.Array.length == 0}>
+            <Delete />
+          </IconButton>
+        </Grid>
+        <Grid item=true>
+          <Typography> {"Clear history"->React.string} </Typography>
+        </Grid>
+      </Grid>
+    </Grid>
+    <div>
       {rows
       ->Belt.Array.mapWithIndex((index, row) =>
-        <Mui.Grid
+        <Grid
           container=true
           direction=#row
           alignItems=#center
           justify=#center
           key={`result-row-${index->Belt.Int.toString}`}>
-          <Mui.Grid item=true>
-            <Mui.IconButton
+          <Grid item=true>
+            <IconButton
               onClick={_ =>
                 Constants.Calculator.removeHistoryRowUrl->WebSocket.send(
                   ~payload=?row->serializeRowId(~dispatch),
                   ~state,
                   ~dispatch,
-                )}
-              className=Classes.iconButton>
-              <Icon.Delete fontSize="small" />
-            </Mui.IconButton>
-          </Mui.Grid>
-          <Mui.Grid item=true> {row->formatRow} </Mui.Grid>
-        </Mui.Grid>
+                )}>
+              <Delete fontSize="small" />
+            </IconButton>
+          </Grid>
+          <Grid item=true> {row->formatRow} </Grid>
+        </Grid>
       )
       ->Jsx.array}
     </div>
-  </div>
+  </Grid>
 }

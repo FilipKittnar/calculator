@@ -1,56 +1,43 @@
+open Calculator_Types
 open ReactDOM
 open Emotion
-open Calculator_Types
+open Calculator_Styles
+open Icon
+open Mui
 
 module Classes = {
-  let resultField =
+  let resultLine = Style.make(~minHeight="1.6rem", ())->styleToClass
+  let button = (theme: Theme.t) =>
     Style.make(
-      ~padding="20px",
-      ~width="100%",
-      ~background="#3a4655",
-      ~border="solid 1px #3a4655",
+      ~border="outset 1px",
+      ~backgroundColor=theme.palette.grey.\"300",
+      ~fontWeight="bold",
       (),
     )->styleToClass
-  let resultFieldTopPart =
-    Style.make(
-      ~borderBottom="dotted 1px",
-      ~height="40%",
-      ~marginBottom="10px",
-      ~width="100%",
-      (),
-    )->styleToClass
-  let resultFieldBottomPart =
-    Style.make(~height="60%", ~width="100%", ~fontWeight="bold", ~fontSize="20px", ())->styleToClass
-  let functionButton = Style.make(~backgroundColor="#425062", ())->styleToClass
-  let button =
-    Style.make(
-      ~width="100%",
-      ~border="solid 1px #4a5562",
-      ~borderRadius="0",
-      ~fontSize="18px",
-      ~color="white",
-      (),
-    )->styleToClass
-  let buttonHover =
-    Style.make(~backgroundColor="#9baab9", ())
-    ->Utils.Style.styleWithSelectors(~cssSelectors=list{Hover})
-    ->styleToClass
 }
 
 module ResultFieldTopPartValue = {
   @react.component
   let make = (~calculator: calculator) => {
-    <Mui.Grid item=true className=Classes.resultFieldTopPart>
-      <Mui.Grid container=true justify=#"flex-end">
-        {calculator.value
-        ->Belt.Option.map(Belt.Float.toString)
-        ->Belt.Option.getWithDefault("")
-        ->Jsx.string}
-        {calculator.currentOperation
-        ->Belt.Option.map(Operator.toElement)
-        ->Belt.Option.getWithDefault(Jsx.null)}
-      </Mui.Grid>
-    </Mui.Grid>
+    <Grid item=true className={[Classes.resultLine, subSection]->cx}>
+      <Grid container=true direction=#row justify=#"flex-end" spacing=#1>
+        <Grid item=true>
+          <Typography>
+            {calculator.value
+            ->Belt.Option.map(Belt.Float.toString)
+            ->Belt.Option.getWithDefault("")
+            ->Jsx.string}
+          </Typography>
+        </Grid>
+        <Grid item=true>
+          <Typography>
+            {calculator.currentOperation
+            ->Belt.Option.map(Operator.toElement)
+            ->Belt.Option.getWithDefault(Jsx.null)}
+          </Typography>
+        </Grid>
+      </Grid>
+    </Grid>
   }
 }
 
@@ -69,9 +56,24 @@ module ResultFieldBottomPartValue = {
           : calculator.entry
       )->Belt.Option.getWithDefault("")
 
-    <Mui.Grid item=true className=Classes.resultFieldBottomPart>
-      <Mui.Grid container=true justify=#"flex-end"> {getValue()->Jsx.string} </Mui.Grid>
-    </Mui.Grid>
+    <Grid item=true className=Classes.resultLine>
+      <Grid container=true direction=#row justify=#"flex-end">
+        <Grid item=true>
+          <Typography> {getValue()->Jsx.string} </Typography>
+        </Grid>
+      </Grid>
+    </Grid>
+  }
+}
+
+module CalcButton = {
+  @react.component
+  let make = (~onClick, ~children) => {
+    let theme = Core.useTheme()
+
+    <Button variant=#text fullWidth=true onClick className={Classes.button(theme)}>
+      children
+    </Button>
   }
 }
 
@@ -111,185 +113,171 @@ let make = (~calculator) => {
       }
     }
 
-  <Mui.Grid container=true direction=#column>
-    <Mui.Grid item=true>
-      <Mui.Grid container=true direction=#row>
-        <Mui.Grid item=true className=Classes.resultField>
-          <Mui.Grid container=true direction=#column>
-            <ResultFieldTopPartValue calculator />
-            <ResultFieldBottomPartValue calculator />
-          </Mui.Grid>
-        </Mui.Grid>
-      </Mui.Grid>
-    </Mui.Grid>
-    <Mui.Grid item=true>
-      <Mui.Grid container=true direction=#row>
-        <Mui.Grid item=true>
-          <Mui.Button
-            onClick={_ => Constants.Calculator.clearMemoryUrl->WebSocket.send(~state, ~dispatch)}
-            className={[Classes.functionButton, Classes.button, Classes.buttonHover]->cx}>
+  <Grid container=true direction=#column alignItems=#stretch>
+    <Grid item=true className=section>
+      <Grid container=true direction=#column>
+        <ResultFieldTopPartValue calculator />
+        <ResultFieldBottomPartValue calculator />
+      </Grid>
+    </Grid>
+    <Grid item=true>
+      <Grid container=true direction=#row justify=#center>
+        <Grid item=true xs=Grid.Xs.\"3">
+          <CalcButton
+            onClick={_ => Constants.Calculator.clearMemoryUrl->WebSocket.send(~state, ~dispatch)}>
             {"C"->React.string}
-          </Mui.Button>
-        </Mui.Grid>
-        <Mui.Grid item=true>
-          <Mui.Button
-            onClick={_ => Constants.Calculator.clearEntryUrl->WebSocket.send(~state, ~dispatch)}
-            className={[Classes.functionButton, Classes.button, Classes.buttonHover]->cx}>
+          </CalcButton>
+        </Grid>
+        <Grid item=true xs=Grid.Xs.\"3">
+          <CalcButton
+            onClick={_ => Constants.Calculator.clearEntryUrl->WebSocket.send(~state, ~dispatch)}>
             {"CE"->React.string}
-          </Mui.Button>
-        </Mui.Grid>
-        <Mui.Grid item=true>
-          <Mui.Button
+          </CalcButton>
+        </Grid>
+        <Grid item=true xs=Grid.Xs.\"3">
+          <CalcButton
             onClick={_ =>
               Constants.Calculator.removeLastCharacterFromEntryUrl->WebSocket.send(
                 ~state,
                 ~dispatch,
-              )}
-            className={[Classes.functionButton, Classes.button, Classes.buttonHover]->cx}>
-            <Icon.Backspace />
-          </Mui.Button>
-        </Mui.Grid>
-        <Mui.Grid item=true>
-          <Mui.Button
+              )}>
+            <Backspace />
+          </CalcButton>
+        </Grid>
+        <Grid item=true xs=Grid.Xs.\"3">
+          <CalcButton
             onClick={_ =>
               Constants.Calculator.selectOperatorUrl->WebSocket.send(
                 ~payload=?Operator.Division->serializeOperator(~dispatch),
                 ~state,
                 ~dispatch,
-              )}
-            className={[Classes.functionButton, Classes.button, Classes.buttonHover]->cx}>
+              )}>
             {Operator.Division->Operator.toElement}
-          </Mui.Button>
-        </Mui.Grid>
-      </Mui.Grid>
-    </Mui.Grid>
-    <Mui.Grid item=true>
-      <Mui.Grid container=true direction=#row>
+          </CalcButton>
+        </Grid>
+      </Grid>
+    </Grid>
+    <Grid item=true>
+      <Grid container=true direction=#row justify=#center>
         {[7., 8., 9.]
         ->Belt.Array.mapWithIndex((index, number) =>
-          <Mui.Grid item=true key={`number-${index->Belt.Int.toString}`}>
-            <Mui.Button
+          <Grid item=true xs=Grid.Xs.\"3" key={`number-${index->Belt.Int.toString}`}>
+            <CalcButton
               onClick={_ =>
                 Constants.Calculator.addNumberToEntryUrl->WebSocket.send(
                   ~payload=?number->serializeNumber(~dispatch),
                   ~state,
                   ~dispatch,
-                )}
-              className={[Classes.functionButton, Classes.button, Classes.buttonHover]->cx}>
+                )}>
               {number->React.float}
-            </Mui.Button>
-          </Mui.Grid>
+            </CalcButton>
+          </Grid>
         )
         ->Jsx.array}
-        <Mui.Grid item=true>
-          <Mui.Button
+        <Grid item=true xs=Grid.Xs.\"3">
+          <CalcButton
             onClick={_ =>
               Constants.Calculator.selectOperatorUrl->WebSocket.send(
                 ~payload=?Operator.Multiplication->serializeOperator(~dispatch),
                 ~state,
                 ~dispatch,
-              )}
-            className={[Classes.functionButton, Classes.button, Classes.buttonHover]->cx}>
+              )}>
             {Operator.Multiplication->Operator.toElement}
-          </Mui.Button>
-        </Mui.Grid>
-      </Mui.Grid>
-    </Mui.Grid>
-    <Mui.Grid item=true>
-      <Mui.Grid container=true direction=#row>
+          </CalcButton>
+        </Grid>
+      </Grid>
+    </Grid>
+    <Grid item=true>
+      <Grid container=true direction=#row justify=#center>
         {[4., 5., 6.]
         ->Belt.Array.mapWithIndex((index, number) =>
-          <Mui.Grid item=true key={`number-${index->Belt.Int.toString}`}>
-            <Mui.Button
+          <Grid item=true xs=Grid.Xs.\"3" key={`number-${index->Belt.Int.toString}`}>
+            <CalcButton
               onClick={_ =>
                 Constants.Calculator.addNumberToEntryUrl->WebSocket.send(
                   ~payload=?number->serializeNumber(~dispatch),
                   ~state,
                   ~dispatch,
-                )}
-              className={[Classes.functionButton, Classes.button, Classes.buttonHover]->cx}>
+                )}>
               {number->React.float}
-            </Mui.Button>
-          </Mui.Grid>
+            </CalcButton>
+          </Grid>
         )
         ->Jsx.array}
-        <Mui.Grid item=true>
-          <Mui.Button
+        <Grid item=true xs=Grid.Xs.\"3">
+          <CalcButton
             onClick={_ =>
               Constants.Calculator.selectOperatorUrl->WebSocket.send(
                 ~payload=?Operator.Subtraction->serializeOperator(~dispatch),
                 ~state,
                 ~dispatch,
-              )}
-            className={[Classes.functionButton, Classes.button, Classes.buttonHover]->cx}>
+              )}>
             {Operator.Subtraction->Operator.toElement}
-          </Mui.Button>
-        </Mui.Grid>
-      </Mui.Grid>
-    </Mui.Grid>
-    <Mui.Grid item=true>
-      <Mui.Grid container=true direction=#row>
+          </CalcButton>
+        </Grid>
+      </Grid>
+    </Grid>
+    <Grid item=true>
+      <Grid container=true direction=#row>
         {[1., 2., 3.]
         ->Belt.Array.mapWithIndex((index, number) =>
-          <Mui.Grid item=true key={`number-${index->Belt.Int.toString}`}>
-            <Mui.Button
+          <Grid item=true xs=Grid.Xs.\"3" key={`number-${index->Belt.Int.toString}`}>
+            <CalcButton
               onClick={_ =>
                 Constants.Calculator.addNumberToEntryUrl->WebSocket.send(
                   ~payload=?number->serializeNumber(~dispatch),
                   ~state,
                   ~dispatch,
-                )}
-              className={[Classes.functionButton, Classes.button, Classes.buttonHover]->cx}>
+                )}>
               {number->React.float}
-            </Mui.Button>
-          </Mui.Grid>
+            </CalcButton>
+          </Grid>
         )
         ->Jsx.array}
-        <Mui.Grid item=true>
-          <Mui.Button
+        <Grid item=true xs=Grid.Xs.\"3">
+          <CalcButton
             onClick={_ =>
               Constants.Calculator.selectOperatorUrl->WebSocket.send(
                 ~payload=?Operator.Addition->serializeOperator(~dispatch),
                 ~state,
                 ~dispatch,
-              )}
-            className={[Classes.functionButton, Classes.button, Classes.buttonHover]->cx}>
+              )}>
             {Operator.Addition->Operator.toElement}
-          </Mui.Button>
-        </Mui.Grid>
-      </Mui.Grid>
-    </Mui.Grid>
-    <Mui.Grid item=true>
-      <Mui.Grid container=true direction=#row>
-        <Mui.Grid item=true>
-          <Mui.Button
+          </CalcButton>
+        </Grid>
+      </Grid>
+    </Grid>
+    <Grid item=true>
+      <Grid container=true direction=#row justify=#center>
+        <Grid item=true xs=Grid.Xs.\"6">
+          <CalcButton
             onClick={_ =>
               Constants.Calculator.addNumberToEntryUrl->WebSocket.send(
                 ~payload=?0.->serializeNumber(~dispatch),
                 ~state,
                 ~dispatch,
-              )}
-            className={[Classes.functionButton, Classes.button, Classes.buttonHover]->cx}>
+              )}>
             {0.->React.float}
-          </Mui.Button>
-        </Mui.Grid>
-        <Mui.Grid item=true>
-          <Mui.Button
+          </CalcButton>
+        </Grid>
+        <Grid item=true xs=Grid.Xs.\"3">
+          <CalcButton
             onClick={_ =>
-              Constants.Calculator.addDecimalSeparatorToEntryUrl->WebSocket.send(~state, ~dispatch)}
-            className={[Classes.functionButton, Classes.button, Classes.buttonHover]->cx}>
+              Constants.Calculator.addDecimalSeparatorToEntryUrl->WebSocket.send(
+                ~state,
+                ~dispatch,
+              )}>
             {","->React.string}
-          </Mui.Button>
-        </Mui.Grid>
-        <Mui.Grid item=true>
-          <Mui.Button
+          </CalcButton>
+        </Grid>
+        <Grid item=true xs=Grid.Xs.\"3">
+          <CalcButton
             onClick={_ =>
-              Constants.Calculator.performCalculateUrl->WebSocket.send(~state, ~dispatch)}
-            className={[Classes.functionButton, Classes.button, Classes.buttonHover]->cx}>
+              Constants.Calculator.performCalculateUrl->WebSocket.send(~state, ~dispatch)}>
             {"="->React.string}
-          </Mui.Button>
-        </Mui.Grid>
-      </Mui.Grid>
-    </Mui.Grid>
-  </Mui.Grid>
+          </CalcButton>
+        </Grid>
+      </Grid>
+    </Grid>
+  </Grid>
 }

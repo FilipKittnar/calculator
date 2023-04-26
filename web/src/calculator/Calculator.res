@@ -3,6 +3,7 @@ open ReactDOM
 open Mui
 
 module Types = Calculator_Types
+module Styles = Calculator_Styles
 module Standard = Calculator_Standard
 module History = Calculator_History
 
@@ -42,19 +43,27 @@ let make = () => {
     None
   }, [state.calculator])
 
-  <div className=Classes.container>
-    <Grid container=true direction=#row>
-      <Standard
-        calculator={state.calculator
-        ->Belt.Option.map(calculator => calculator->Belt.Result.getWithDefault({results: []}))
-        ->Belt.Option.getWithDefault({results: []})}
-      />
-      <History />
+  <Grid container=true direction=#column>
+    <Grid item=true>
+      <Grid container=true direction=#column spacing=#2>
+        <Grid item=true>
+          <Standard
+            calculator={state.calculator
+            ->Belt.Option.map(calculator => calculator->Belt.Result.getWithDefault({results: []}))
+            ->Belt.Option.getWithDefault({results: []})}
+          />
+        </Grid>
+        <Grid item=true>
+          <History />
+        </Grid>
+      </Grid>
     </Grid>
-    <Backdrop
-      style={Style.make(~color="#fff", ~zIndex="1201", ())}
-      \"open"={state.calculator->Belt.Option.isNone}>
-      <CircularProgress color=#inherit />
-    </Backdrop>
-  </div>
+    <Grid item=true>
+      <Backdrop
+        style={Style.make(~color="#fff", ~zIndex="1201", ())}
+        \"open"={state.calculator->Belt.Option.isNone}>
+        <CircularProgress color=#inherit />
+      </Backdrop>
+    </Grid>
+  </Grid>
 }
